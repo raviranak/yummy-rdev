@@ -157,7 +157,11 @@ class DeltaSourceReader(YummyDataSourceReader):
             import dask.dataframe as dd
             from deltalake import DeltaTable
             dt = DeltaTable(path)
-            return dd.from_pandas(dt.to_pandas(), npartitions=1)
+            fragments = dt.to_pyarrow_dataset().get_fragments(filter=None)
+            filenames = list(f"{table_uri}/{fragment.path}" for fragment in fragments)
+            ddf = dd.read_parquet(filenames, engine="pyarrow", columns=None)
+            return ddf
+
         elif backend_type == BackendType.polars:
             import polars as pl
             from deltalake import DeltaTable
