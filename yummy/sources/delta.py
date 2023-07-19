@@ -158,7 +158,7 @@ class DeltaSourceReader(YummyDataSourceReader):
             from deltalake import DeltaTable
             dt = DeltaTable(path)
             fragments = dt.to_pyarrow_dataset().get_fragments(filter=None)
-            filenames = list(f"{table_uri}/{fragment.path}" for fragment in fragments)
+            filenames = list(f"{path}/{fragment.path}" for fragment in fragments)
             ddf = dd.read_parquet(filenames, engine="pyarrow", columns=None)
             return ddf
 
